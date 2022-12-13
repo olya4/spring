@@ -1,0 +1,141 @@
+<!doctype html>
+<!--winter - название приложения-->
+<!--ng-app - ангуляровское (js) приложение, кот. управляет кодом страницы-->
+<html ng-app="app">
+
+<head>
+    <meta charset="utf-8">
+    <!-- стилизация документа-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <!-- бибилиотека angular.min.js-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+    <!-- библиотека ngStorage.min.js нужна для хранения данных в самом браузере
+     при перезапуске страницы, эти данные будут подтягиваться из какогото-хранилища -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
+    <!-- привязка к index.js-->
+    <script src="index.js"></script>
+</head>
+
+<body>
+<!-- контроллер управляет всем, что находится в <div> -->
+<div class="container" ng-controller="indexController">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <!-- переход на титульную страницу -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#!/">Winter Market</a>
+                </li>
+                <!-- ng-show - если выполнено условие, далее будет показана форма,
+                если условие не выполнено - форма не будет отображена в браузере-->
+
+                <!-- если пользователь не авторизован - будет показана форма для авторизации -->
+                <li class="nav-item" ng-show="!isUserLoggedIn()">
+                    <!-- форма для авторризации -->
+                    <form class="align-middle" ng-submit="tryToAuth()">
+                        <div class="input-group input-group-sm" style="padding: 4px;">
+                            <!-- ng-model сформирует json-объект
+                             user = {
+                             "username": "логин",
+                             "password": "пароль"
+                             } -->
+                            <!-- в форме есть поле для логина -->
+                            <input id="navLoginField" class="form-control" ng-model="user.username" type="text"
+                                   aria-describedby="inputGroup-sizing-sm" style="margin-left: 10px;">
+                            <!-- в форме есть поле для пароля -->
+                            <input id="navPasswordField" class="form-control" ng-model="user.password" type="password"
+                                   aria-describedby="inputGroup-sizing-sm" style="margin-left: 10px;">
+                            <!-- при нажатии на кнопку сработает метод ng-submit="tryToAuth()"
+                            и данные из полей формы собирутся в переменную user -->
+                            <button id="navLoginSubmit" class="btn btn-dark"
+                                    style="margin-left: 10px;" type="submit">Войти
+                            </button>
+                        </div>
+                    </form>
+                </li>
+                <!-- если пользователь авторизован - формы для авторизации видно не будет -->
+                <li class="nav-item" ng-show="isUserLoggedIn()" style="padding: 4px;">
+                    <!-- при нажатии на кнопку сработает метод ng-click="tryToLogout()" -->
+                    <button class="btn btn-outline-secondary btn-sm" ng-click="tryToLogout()">Выйти</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <h3>Список продуктов</h3>
+    <!-- таблица для вывода данных-->
+    <table class="table table-hover" cellpadding="0" cellspacing="0">
+        <!-- название столбцов-->
+        <tr>
+            <td>ID</td>
+            <td>Название продукта</td>
+            <td>Цена</td>
+            <td>Категория</td>
+        </tr>
+        <!-- заполнение строк-->
+        <tbody>
+        <!-- ng-repeat - цикл-->
+        <!--ProductsList находится в $scope в js-документе-->
+        <tr ng-repeat="p in ProductsList">
+            <!-- поля объекта и кнопки, которые будут выведены в таблицу по каждому объекту p из цикла-->
+
+            <!-- {{p.id}} - переменная из $scope.ProductsList из js-->
+            <td>{{p.id}}</td>
+            <td>{{p.title}}</td>
+            <td>{{p.price}}</td>
+            <td>{{p.categoryTitle}}</td>
+            <td>
+                <!-- addToCart(p.id) - добавить товар в корзинку по id -->
+                <button class="btn btn-primary" ng-click="addToCart(p.id)">Добавить в корзинку</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p></p>
+    <h3>Корзинка</h3>
+    <!-- таблица для вывода данных-->
+    <table class="table table-hover" cellpadding="0" cellspacing="0">
+        <!-- название столбцов-->
+        <tr>
+            <td>Название</td>
+            <td>Количество</td>
+            <td>Цена</td>
+        </tr>
+        <!-- заполнение строк-->
+        <tbody>
+        <!-- ng-repeat - цикл-->
+        <!-- в $scope.cart из js-документа находится список items и totalPrice (поля класса Cart)-->
+        <!-- items находится в  $scope.cart в js-документе-->
+        <tr ng-repeat="item in cart.items">
+            <!-- поля объекта и кнопки, которые будут выведены в таблицу по каждому объекту item из цикла-->
+
+            <!-- {{item.productTitle}} - переменная из $scope.cart из js-->
+            <td>{{item.productTitle}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.pricePerProduct + ' x ' + item.quantity + ' = ' + item.price}}</td>
+            <td>
+                <!-- removeFromCart(item.productId) - удалить товар из корзинки по id -->
+                <button class="btn btn-danger" ng-click="removeFromCart(item.productId)">Удалить</button>
+            </td>
+        </tr>
+        <tr>
+            <!-- {{cart.totalPrice}} - переменная из $scope.cart из js-->
+            <td>Итого</td>
+            <td></td>
+            <td>{{cart.totalPrice}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <button class="btn btn-warning" ng-click="clearCart()">Очистить корзинку</button>
+    <p></p>
+    <button class="btn btn-success" ng-click="createOrder()">Оформить заказ</button>
+</div>
+</body>
+</html>
