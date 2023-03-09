@@ -1,0 +1,95 @@
+<!doctype html>
+<!--название приложения-->
+<!--ng-app - ангуляровское (js) приложение, кот. управляет кодом страницы-->
+<html ng-app="app">
+
+<head>
+    <meta charset="utf-8">
+    <!-- стилизация документа-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <!-- бибилиотека angular.min.js-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+
+    <!-- привязка к index.js-->
+    <script src="index.js"></script>
+</head>
+
+<body>
+<!-- контроллер управляет всем, что находится в <div> -->
+<div class="container" ng-controller="indexController">
+
+    <h3>Список студентов</h3>
+    <!-- таблица для вывода данных-->
+    <table class="table table-hover" cellpadding="0" cellspacing="0">
+        <!-- название столбцов-->
+        <tr>
+            <td>ID</td>
+            <td>Имя студента</td>
+            <td>Возраст</td>
+            <td>Действие</td>
+        </tr>
+        <!-- заполнение строк-->
+        <tbody>
+        <!-- ng-repeat - цикл-->
+        <!--StudentsList находится в $scope в js-документе-->
+        <tr ng-repeat="s in StudentsList">
+            <!-- поля объекта и кнопки, которые будут выведены в таблицу по каждому объекту s из цикла-->
+
+            <!-- {{s.id}} - переменная из $scope.StudentsList из js-->
+            <td>{{s.id}}</td>
+            <td>{{s.name}}</td>
+            <td>{{s.age}}</td>
+
+            <td>
+                <!-- class="btn btn-danger" - кнопка красного цвета-->
+                <!-- ng-click - listener (слушатель)-->
+                <!-- ng-click="deleteStudent" - при нажатии на кнопку будет выполнена функция deleteStudent-->
+                <!-- функция deleteStudent находится в index.js-->
+                <!-- (s.id) - id студента-->
+                <button class="btn btn-danger" ng-click="deleteStudent(s.id)">Удалить</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p></p>
+    <h3>Добавить студента</h3>
+
+    <!--    ng-submit - слушатель формы-->
+    <!--    при нажатии на кнопку с типом submit будет выполнен метод createStudent()-->
+    <form novalidate ng-submit="createStudent()">
+        <!--        placeholder - будет написано внутри поля-->
+        <!--        ng-model - текст из этого поля попадет в объект - newStudent, в поле - name-->
+        <!--        newStudent - json объект. Поля (количество, тип, название) будет те,кот.указываются в форме-->
+        <!--        newStudent собирается в форме (все поля, указанные в форме, формируют объект)
+                    и отправляется в js-файл (там он - $scope.newStudent) -->
+        <input class="form-control" type="text" placeholder="Имя" ng-model="newStudent.name">
+        <p></p>
+        <input class="form-control" type="number" placeholder="Возраст" ng-model="newStudent.age">
+        <p></p>
+        <button type="submit" class="btn btn-primary">Сохранить студента</button>
+    </form>
+
+    <p></p>
+    <h3>Изменить студента</h3>
+
+    <!--    ng-submit - слушатель формы-->
+    <!--    при нажатии на кнопку с типом submit будет выполнен метод updateStudent()-->
+    <form novalidate ng-submit="updateStudent()">
+        <input class="form-control" type="number" placeholder="Id" ng-model="updateStudent.id">
+        <p></p>
+        <input class="form-control" type="text" placeholder="Имя" ng-model="updateStudent.name">
+        <p></p>
+        <input class="form-control" type="number" placeholder="Возраст" ng-model="updateStudent.age">
+        <p></p>
+        <button type="submit" class="btn btn-warning">Сохранить изменения</button>
+    </form>
+
+</div>
+</body>
+</html>
